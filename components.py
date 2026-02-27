@@ -117,29 +117,31 @@ class Board:
     block_area: float 
     block_percentage: float = 0.25 # Top 25% of board
 
+    top_space: int = 2
+
     level: int
     score: int
 
-    def __init__(self, bounds: tuple[float, float], number_blocks: tuple[int, int] = COLUMS_ROWS, block_colours: list[tuple[int, int, int]] = BLOCK_COLOURS):
+    def __init__(self, bounds: tuple[float, float], number_blocks: tuple[int, int] = COLUMS_ROWS, block_colours: list[tuple[int, int, int]] = BLOCK_COLOURS, level: int = 1, score: int = 0):
         self.original_bounds = bounds
         block_size: float = bounds[0] / number_blocks[0]
-        self.bounds = (bounds[0], max(bounds[1], (5 * block_size) * (1/self.block_percentage)))
+        self.bounds = (bounds[0], max(bounds[1], ((number_blocks[1] - self.top_space) * block_size) * (1/self.block_percentage)))
         
         self.blocks = []
         self.number_blocks = number_blocks
         self.block_colours = block_colours
         for y in range(number_blocks[1]):
             for x in range(number_blocks[0]):
-                self.blocks.append(Block(Vector(x * block_size, y * block_size), block_size, block_colours[y]))
-        self.block_area = (number_blocks[1] * block_size) + block_size
+                self.blocks.append(Block(Vector(x * block_size, (y + self.top_space) * block_size), block_size, block_colours[y]))
+        self.block_area = ((number_blocks[1] + self.top_space) * block_size) + block_size
 
         self.ball = Ball(Vector(self.original_bounds[0] / 2 - block_size / 2, self.original_bounds[1] * (1 - 0.1) + block_size / 2), block_size / 3) 
 
         paddle_size: tuple[float, float] = (block_size * 3, block_size / 2)
         self.paddle = Paddle(Vector(self.original_bounds[0] / 2 - paddle_size[0] / 2, self.original_bounds[1] * (1 - 0.05)), paddle_size, self.original_bounds[0]) 
         
-        self.level: int = 1
-        self.score: int = 0
+        self.level = level
+        self.score = score
 
     def update(self, paddle_direction: Direction, delta_time: float) -> int:
         self.ball.update(delta_time)
@@ -163,9 +165,8 @@ class Board:
         if (self.ball.position[1] - self.ball.radius <= 0):
             self.ball.bounce_y()
 
-        # Check Pad Collision
-        if self.ball.position[1] + self.ball.radius >= self.paddle.position[1] and \
-           self.ball.velocity[1] > 0: # Only if ball is moving downwards and at the height of the paddle
+        # Check Paddle Collision
+        if self.ball.position[1] + self.ball.radius >= self.paddle.position[1]: # Only if ball is at the height of the paddle
 
             if (self.ball.position[0] >= self.paddle.position[0]) and \
                (self.ball.position[0] <= self.paddle.position[0] + self.paddle.size[0]):
@@ -190,7 +191,7 @@ class Board:
         # Check Block Collisions
         if self.ball.position[1] - self.ball.radius <= self.block_area: 
             for block in self.blocks:
-                # AABB collision check
+                # AABB collision check. Not exact for a circle, but good enough and much faster than a circle-rectangle collision check.
                 if (self.ball.position[0] + self.ball.radius >= block.position[0] and 
                     self.ball.position[0] - self.ball.radius <= block.position[0] + block.size and
                     self.ball.position[1] + self.ball.radius >= block.position[1] and 
@@ -202,7 +203,7 @@ class Board:
                     return 2
             if not self.blocks: # All blocks destroyed
                 self.score += 10
-                self.reset()
+                self.reset(level_up=True, score=self.score)
                 return -1
 
         return 1
@@ -210,5 +211,5 @@ class Board:
     def get_score(self) -> int:
         return self.score * 15 + self.level ** 3
     
-    def reset(self):
-        self.__init__(self.original_bounds, self.number_blocks, self.block_colours)
+    def reset(self, level_up: bool = False, score: int = 0):
+        self.__init__(self.original_bounds, self.number_blocks, self.block_colours, self.level + 1 if level_up else self.level, score)

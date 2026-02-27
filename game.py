@@ -24,7 +24,6 @@ class Game:
         self.paused = False
 
         self.board = Board(BOARD_SIZE, COLUMS_ROWS)
-        self.level = 1
 
         self.board_surface = pygame.Surface(BOARD_SIZE)
         self.board_position = ((WINDOW_SIZE[0] - BOARD_SIZE[0]) / 2, (WINDOW_SIZE[1] - BOARD_SIZE[1]) / 2)
@@ -104,8 +103,6 @@ class Game:
                     case 3:
                         self.paddle_hit_sound.play()
                     case -1:
-                        self.level += 1
-                        self.board.level = self.level
                         self.board.ball.max_velocity *= LEVEL_BALL_SPEED_MULTIPLIER
                         play_sounds(self.clear_level_sound)
                     case _:
