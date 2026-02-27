@@ -1,0 +1,12 @@
+BLUE = (78, 84, 198)
+GREEN = (86, 212, 87)
+YELLOW = (204, 213, 46)
+GOLD = (222, 155, 42)
+ORANGE = (250, 128, 55)
+RED = (248, 78, 78)
+GREY = (117, 117, 117)
+BROWN = (174, 124, 63)
+WHITE = (247, 247, 247)
+BLACK = (1, 1, 1)
+
+BLOCK_COLOURS: list[tuple[int, int, int]] = [RED, ORANGE, GOLD, YELLOW, GREEN, BLUE]
