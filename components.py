@@ -212,4 +212,4 @@ class Board:
         return self.score * 15 + self.level ** 3
     
     def reset(self, level_up: bool = False, score: int = 0):
-        self.__init__(self.original_bounds, self.number_blocks, self.block_colours, self.level + 1 if level_up else self.level, score)
+        self.__init__(self.original_bounds, self.number_blocks, self.block_colours, self.level + 1 if level_up else 1, score)
