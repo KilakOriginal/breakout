@@ -70,12 +70,15 @@ class Game:
     def draw_score(self):
         level_string = f"Level: {self.board.level}"
         score_string = f"Score: {self.board.get_score()}"
+        lives_string = f"Lives: {self.board.lives}"
 
         level_text = self.font.render(level_string, True, WHITE)
         score_text = self.font.render(score_string, True, WHITE)
+        lives_text = self.font.render(lives_string, True, WHITE)
 
         self.display.blit(level_text, (self.board_position[0] - BORDER_SIZE, self.board_position[1] - level_text.get_height() - BORDER_SIZE - 5))
         self.display.blit(score_text, (self.board_position[0] - BORDER_SIZE + level_text.get_width() + 10, self.board_position[1] - score_text.get_height() - BORDER_SIZE - 5))
+        self.display.blit(lives_text, (self.board_position[0] - BORDER_SIZE + level_text.get_width() + score_text.get_width() + 20, self.board_position[1] - lives_text.get_height() - BORDER_SIZE - 5))
 
     def draw(self):
         self.display.fill(BLACK)
@@ -118,7 +121,6 @@ class Game:
 
                 match game_state:
                     case 0:
-                        self.board.reset()
                         play_sounds(self.game_over_sound)
                     case 1:
                         pass

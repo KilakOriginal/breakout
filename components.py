@@ -121,8 +121,9 @@ class Board:
 
     level: int
     score: int
+    lives: int
 
-    def __init__(self, bounds: tuple[float, float], number_blocks: tuple[int, int] = COLUMS_ROWS, block_colours: list[tuple[int, int, int]] = BLOCK_COLOURS, level: int = 1, score: int = 0):
+    def __init__(self, bounds: tuple[float, float], number_blocks: tuple[int, int] = COLUMS_ROWS, block_colours: list[tuple[int, int, int]] = BLOCK_COLOURS, level: int = 1, score: int = 0, lives: int = MAX_LIFES):
         self.original_bounds = bounds
         block_size: float = bounds[0] / number_blocks[0]
         self.bounds = (bounds[0], max(bounds[1], ((number_blocks[1] - self.top_space) * block_size) * (1/self.block_percentage)))
@@ -142,6 +143,7 @@ class Board:
         
         self.level = level
         self.score = score
+        self.lives = lives
 
     def update(self, paddle_direction: Direction, delta_time: float, paddle_speed_multiplier: float = 1.0) -> int:
         self.ball.update(delta_time)
@@ -149,7 +151,16 @@ class Board:
 
         # Check Wall Collisions
         if self.ball.position[1] - self.ball.radius >= self.bounds[1]: # Bottom Wall
-            return 0 # Game Over
+            self.lives -= 1
+            if self.lives <= 0: # Game Over
+                self.reset()
+            else:
+                self.ball.position = Vector(self.original_bounds[0] / 2, self.original_bounds[1] * (1 - 0.1))
+                self.ball.velocity = Vector(random.choice([-5.0, 5.0]), -BASE_BALL_VELOCITY)
+                self.paddle.position = Vector(self.original_bounds[0] / 2 - self.paddle.size[0] / 2, self.original_bounds[1] * (1 - 0.05))
+                self.paddle.velocity = Vector(0.0, 0.0)
+            self.score = int(max(self.score - 5 * (self.level ** 1.5), 0))
+            return 0 
         
         # Left/Right Walls
         if (self.ball.position[0] - self.ball.radius <= 0) or \
@@ -204,7 +215,7 @@ class Board:
                     return 2
             if not self.blocks: # All blocks destroyed
                 self.score += 10
-                self.reset(level_up=True, score=self.score)
+                self.reset(level_up=True, score=self.score, lives=self.lives)
                 return -1
 
         return 1
@@ -212,5 +223,5 @@ class Board:
     def get_score(self) -> int:
         return self.score * 15 + self.level ** 3
     
-    def reset(self, level_up: bool = False, score: int = 0):
-        self.__init__(self.original_bounds, self.number_blocks, self.block_colours, self.level + 1 if level_up else 1, score)
+    def reset(self, level_up: bool = False, score: int = 0, lives: int = 0):
+        self.__init__(self.original_bounds, self.number_blocks, self.block_colours, self.level + 1 if level_up else 1, score, lives or MAX_LIFES)
