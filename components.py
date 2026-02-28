@@ -164,6 +164,7 @@ class Board:
         # Top Wall
         if (self.ball.position[1] - self.ball.radius <= 0):
             self.ball.bounce_y()
+            self.ball.position = Vector(self.ball.position[0], self.ball.radius)
 
         # Check Paddle Collision
         if self.ball.position[1] + self.ball.radius >= self.paddle.position[1]: # Only if ball is at the height of the paddle

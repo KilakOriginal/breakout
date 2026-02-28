@@ -109,10 +109,10 @@ class Game:
                     axis_value = self.joystick.get_axis(0)
                     if axis_value < -self.joystick_deadzone:
                         direction = Direction.LEFT
-                        self.paddle_speed_multiplier = 0.1 + (abs(axis_value) * 0.8)
+                        self.paddle_speed_multiplier = 0.1 + (abs(axis_value) * 0.9)
                     elif axis_value > self.joystick_deadzone:
                         direction = Direction.RIGHT
-                        self.paddle_speed_multiplier = 0.1 + (abs(axis_value) * 0.8)
+                        self.paddle_speed_multiplier = 0.1 + (abs(axis_value) * 0.9)
 
                 game_state = self.board.update(direction, 1.0 / FPS, self.paddle_speed_multiplier)
 
