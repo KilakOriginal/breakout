@@ -123,7 +123,7 @@ class Board:
     score: int
     lives: int
 
-    def __init__(self, bounds: tuple[float, float], number_blocks: tuple[int, int] = COLUMS_ROWS, block_colours: list[tuple[int, int, int]] = BLOCK_COLOURS, level: int = 1, score: int = 0, lives: int = MAX_LIFES):
+    def __init__(self, bounds: tuple[float, float], number_blocks: tuple[int, int] = COLUMS_ROWS, block_colours: list[tuple[int, int, int]] = BLOCK_COLOURS, level: int = 1, score: int = 0, lives: int = LIVES):
         self.original_bounds = bounds
         block_size: float = bounds[0] / number_blocks[0]
         self.bounds = (bounds[0], max(bounds[1], ((number_blocks[1] - self.top_space) * block_size) * (1/self.block_percentage)))
@@ -224,4 +224,4 @@ class Board:
         return self.score * 15 + self.level ** 3
     
     def reset(self, level_up: bool = False, score: int = 0, lives: int = 0):
-        self.__init__(self.original_bounds, self.number_blocks, self.block_colours, self.level + 1 if level_up else 1, score, lives or MAX_LIFES)
+        self.__init__(self.original_bounds, self.number_blocks, self.block_colours, self.level + 1 if level_up else 1, score, lives or LIVES)

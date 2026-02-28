@@ -8,7 +8,7 @@ FONT_SIZE: int = 24
 
 BOARD_SIZE: tuple[float, float] = (800, 1000)
 BORDER_SIZE: float = 20.0
-MAX_LIFES: int = 5
+LIVES: int = 5
 
 BASE_BALL_MAX_VELOCITY: float = 55.0
 BASE_BALL_VELOCITY: float = 40.0
