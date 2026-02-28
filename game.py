@@ -10,9 +10,17 @@ import pygame
 class Game:
     def __init__(self):
         pygame.mixer.pre_init(AUDIO_SAMPLE_RATE, -AUDIO_BIT_DEPTH, AUDIO_CHANNELS)
-        pygame.init()
-        pygame.font.init()
 
+        pygame.init()
+        
+        pygame.joystick.init()
+        self.joystick = None
+        self.joystick_deadzone = 0.1
+        if pygame.joystick.get_count() > 0:
+            self.joystick = pygame.joystick.Joystick(0)
+            self.joystick.init()
+        
+        pygame.font.init()
         self.font = pygame.font.Font(FONT_PATH, FONT_SIZE)
 
         self.display = pygame.display.set_mode(WINDOW_SIZE)
@@ -24,6 +32,7 @@ class Game:
         self.paused = False
 
         self.board = Board(BOARD_SIZE, COLUMS_ROWS)
+        self.paddle_speed_multiplier = 1.0
 
         self.board_surface = pygame.Surface(BOARD_SIZE)
         self.board_position = ((WINDOW_SIZE[0] - BOARD_SIZE[0]) / 2, (WINDOW_SIZE[1] - BOARD_SIZE[1]) / 2)
@@ -86,13 +95,26 @@ class Game:
                         self.board.reset()
 
             if not self.paused:
-                match pygame.key.get_pressed():
-                    case keys if keys[K_LEFT] and not keys[K_RIGHT]:
-                        game_state = self.board.update(Direction.LEFT, 1.0 / FPS)
-                    case keys if keys[K_RIGHT] and not keys[K_LEFT]:
-                        game_state = self.board.update(Direction.RIGHT, 1.0 / FPS)
-                    case _:
-                        game_state = self.board.update(Direction.STOP, 1.0 / FPS)
+                direction = Direction.STOP
+                keys = pygame.key.get_pressed()
+                if keys[K_LEFT] and not keys[K_RIGHT]:
+                    direction = Direction.LEFT
+                    self.paddle_speed_multiplier = 1.0
+                elif keys[K_RIGHT] and not keys[K_LEFT]:
+                    direction = Direction.RIGHT
+                    self.paddle_speed_multiplier = 1.0
+
+                # Joystick input overrides keyboard input
+                if self.joystick is not None:
+                    axis_value = self.joystick.get_axis(0)
+                    if axis_value < -self.joystick_deadzone:
+                        direction = Direction.LEFT
+                        self.paddle_speed_multiplier = 0.1 + (abs(axis_value) * 0.8)
+                    elif axis_value > self.joystick_deadzone:
+                        direction = Direction.RIGHT
+                        self.paddle_speed_multiplier = 0.1 + (abs(axis_value) * 0.8)
+
+                game_state = self.board.update(direction, 1.0 / FPS, self.paddle_speed_multiplier)
 
                 match game_state:
                     case 0:

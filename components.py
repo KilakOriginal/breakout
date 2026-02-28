@@ -78,7 +78,7 @@ class Paddle:
         self.acceleration_factor = PADDLE_ACCELERATION_FACTOR
         self.deceleration_factor = self.acceleration_factor ** 1.5
 
-    def update(self, direction: Direction, delta_time: float):
+    def update(self, direction: Direction, delta_time: float, speed_multiplier: float = 1.0):
         current_speed: float = abs(self.velocity[0])
 
         # === Deceleration ===
@@ -99,7 +99,7 @@ class Paddle:
             current_speed = self.base_speed
 
         # Exponential acceleration: v = v + (v * factor * dt)
-        current_speed = min(current_speed + current_speed * self.acceleration_factor * delta_time, self.max_speed)
+        current_speed = min(current_speed + current_speed * self.acceleration_factor * delta_time, self.max_speed * speed_multiplier)
 
         self.velocity = Vector(current_speed * direction.value, 0.0)
         self.position = Vector(min(max(self.position[0] + self.velocity[0] * delta_time, 0.0), self.board_width - self.size[0]), self.position[1])
@@ -143,9 +143,9 @@ class Board:
         self.level = level
         self.score = score
 
-    def update(self, paddle_direction: Direction, delta_time: float) -> int:
+    def update(self, paddle_direction: Direction, delta_time: float, paddle_speed_multiplier: float = 1.0) -> int:
         self.ball.update(delta_time)
-        self.paddle.update(paddle_direction, delta_time)
+        self.paddle.update(paddle_direction, delta_time, paddle_speed_multiplier)
 
         # Check Wall Collisions
         if self.ball.position[1] - self.ball.radius >= self.bounds[1]: # Bottom Wall
