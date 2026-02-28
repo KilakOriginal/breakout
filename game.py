@@ -1,8 +1,8 @@
 from components import *
 from constants import *
-from maths import Vector
 from pygame.locals import *
-from sound import *
+from sound.sound import *
+from video.effects import *
 
 import pygame
 
@@ -25,6 +25,9 @@ class Game:
 
         self.display = pygame.display.set_mode(WINDOW_SIZE)
         pygame.display.set_caption(TITLE)
+
+        self.active_effects = [] #[ColourShiftEffect(), ScanlineEffect()] # Sadly these effects are too performance intensive for PyGame to handle
+        self.paused_effects = []
 
         self.fps = pygame.time.Clock()
         self.fps.tick(FPS)
@@ -85,6 +88,13 @@ class Game:
         self.draw_board()
         self.draw_score()
 
+        if not self.paused:
+            for effect in self.active_effects:
+                effect.apply(self.display)
+        else:
+            for effect in self.paused_effects:
+                effect.apply(self.display)
+
     def run(self) -> int:
         while True:
             for event in pygame.event.get():
@@ -134,5 +144,12 @@ class Game:
                     case _:
                         raise ValueError(f"Invalid game state '{game_state}' returned from board update")
 
-                self.draw()
+                for effect in self.active_effects:
+                    effect.update(1000 / FPS)
+            else:
+                
+                for effect in self.paused_effects:
+                    effect.update(1000 / FPS)
+
+            self.draw()
             pygame.display.update()
