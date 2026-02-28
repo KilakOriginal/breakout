@@ -82,6 +82,8 @@ class Game:
                 if event.type == KEYDOWN:
                     if event.key == K_p:
                         self.paused = not self.paused
+                    if event.key == K_r:
+                        self.board.reset()
 
             if not self.paused:
                 match pygame.key.get_pressed():
