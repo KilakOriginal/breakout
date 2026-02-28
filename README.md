@@ -20,7 +20,8 @@ You can play Breakout with a keyboard or with a joystick/controller.
 - `Main Axis`: Move Paddle to the Right/Left
 
 ## How To Run
-Just install [Python](https://www.python.org/) and [PyGame](https://www.pygame.org/news) and run `main.py`.
+Just install [Python](https://www.python.org/) and the dependencies by issuing `pip3 install -r Requirements.txt` from inside the game's directory. 
+Then execute `main.py` using Python to start the game.
 
 ## For Developers
 Since the game logic is separate from the PyGame game loop, this can easily be adapted for a machine learning agent. You can also copy my environment from my [DQN Breakout Agent](https://github.com/KilakOriginal/breakout-agent) repository.
