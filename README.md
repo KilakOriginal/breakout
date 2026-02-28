@@ -2,6 +2,7 @@
 Breakout is a video game inspired by the 1976 Atari, Inc. action game of the same title for the Atari 2600.
 
 <img src="breakout_gameplay.gif" style="display: block; margin-left: auto; margin-right: auto; height: 500px;"/>
+Gameplay footage with video effects enabled (disabled by default).
 
 ## Gameplay
 The goal of breakout is to break as many of the coloured blocks as possible, by hitting the ball into them with the paddle.
